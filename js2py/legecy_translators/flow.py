@@ -9,9 +9,9 @@ FOR 123
 FOR iter
 CONTINUE, BREAK, RETURN, LABEL, THROW, TRY, SWITCH
 """
-from utils import *
-from jsparser import *
-from nodevisitor import exp_translator
+from .utils import *
+from .jsparser import *
+from .nodevisitor import exp_translator
 import random
 
 
@@ -80,7 +80,7 @@ def do_statement(source, start):
     if any(startswith_keyword(source[start:], e) for e in {'case', 'default'}):
         return None, start
     rest = source[start:]
-    for key, meth in KEYWORD_METHODS.iteritems():  # check for statements that are uniquely defined by their keywords
+    for key, meth in KEYWORD_METHODS.items():  # check for statements that are uniquely defined by their keywords
         if rest.startswith(key):
             # has to startwith this keyword and the next letter after keyword must be either EOF or not in IDENTIFIER_PART
             if len(key)==len(rest) or rest[len(key)] not in IDENTIFIER_PART:
@@ -166,7 +166,7 @@ def do_expression(source, start):
             rpos = pass_until(rev, rpos, LINE_TERMINATOR)
             if rpos>=len(rev):
                 raise
-            if filter(lambda x: x not in SPACE, rev[lpos:rpos]):
+            if [x for x in rev[lpos:rpos] if x not in SPACE]:
                break
         end = start + len(rev) - rpos + 1
 
@@ -452,5 +452,5 @@ def translate_flow(source):
 if __name__=='__main__':
     #print do_dowhile('do {} while(k+f)', 0)[0]
     #print 'e: "%s"'%do_expression('++(c?g:h);   mj', 0)[0]
-    print translate_flow('a; yimport test')[0]
+    print(translate_flow('a; yimport test')[0])
 

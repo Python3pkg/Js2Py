@@ -27,6 +27,6 @@ def js6_to_js5(code):
     return babel.transform(code, {'presets': babelPresetEs2015}).code
 
 if __name__=='__main__':
-    print(js6_to_js5('obj={}; obj.x = function() {return () => this}'))
+    print((js6_to_js5('obj={}; obj.x = function() {return () => this}')))
     print()
-    print(js6_to_js5('const a = 1;'))
+    print((js6_to_js5('const a = 1;')))

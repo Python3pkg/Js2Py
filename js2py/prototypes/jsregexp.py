@@ -1,18 +1,18 @@
 
 class RegExpPrototype:
     def toString():
-        flags = u''
+        flags = ''
         try:
             if this.glob:
-                flags += u'g'
+                flags += 'g'
             if this.ignore_case:
-                flags += u'i'
+                flags += 'i'
             if this.multiline:
-                flags += u'm'
+                flags += 'm'
         except:
             pass
         v = this.value if this.value else '(?:)'
-        return u'/%s/'%v + flags
+        return '/%s/'%v + flags
 
     def test(string):
         return Exec(this, string) is not this.null

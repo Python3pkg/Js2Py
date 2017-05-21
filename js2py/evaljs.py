@@ -191,7 +191,7 @@ class EvalJs(object):
         try:
             with open(filename, mode='w') as f:
                 f.write(code)
-            execfile(filename, self._context)
+            exec(compile(open(filename).read(), filename, 'exec'), self._context)
         except Exception as err:
             raise err
         finally:
@@ -226,11 +226,11 @@ class EvalJs(object):
         """starts to interact (starts interactive console) Something like code.InteractiveConsole"""
         while True:
             if six.PY2:
-                code = raw_input('>>> ')
+                code = input('>>> ')
             else:
-                code = input('>>>')
+                code = eval(input('>>>'))
             try:
-                print(self.eval(code))
+                print((self.eval(code)))
             except KeyboardInterrupt:
                 break
             except Exception as e:

@@ -26,7 +26,7 @@ try:
 except js2py.PyJsException as err:
     assert str(err).startswith('SyntaxError: ')
 
-print("Passed ECMA 5!\n"+30*'-')
+print(("Passed ECMA 5!\n"+30*'-'))
 
 print("Testing ECMA 6...")
 

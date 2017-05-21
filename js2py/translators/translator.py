@@ -45,7 +45,7 @@ cache = {}
 # del js2py.pyjs
 # del js2py
 
-DEFAULT_HEADER = u'''from js2py.pyjs import *
+DEFAULT_HEADER = '''from js2py.pyjs import *
 # setting scope
 var = Scope( JS_BUILTINS )
 set_global_object(var)

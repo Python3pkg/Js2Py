@@ -19,7 +19,7 @@ def Eval(code):
     lines = py_code.split('\n')
     # a simple way to return value from eval. Will not work in complex cases.
     has_return = False
-    for n in xrange(len(lines)):
+    for n in range(len(lines)):
         line = lines[len(lines)-n-1]
         if line.strip():
             if line.startswith(' '):

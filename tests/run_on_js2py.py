@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import js2py
 from js2py.base import PyJsException, PyExceptionToJs
 import os, sys, re, traceback, threading, ctypes, time, six
@@ -205,7 +205,7 @@ def test_all(path):
         except:
             print(traceback.format_exc())
             print(f)
-            input()
+            eval(input())
     for folder in folders:
         test_all(folder)
 

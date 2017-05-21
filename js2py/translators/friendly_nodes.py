@@ -3,10 +3,10 @@ import binascii
 from pyjsparser import PyJsParser
 import six
 if six.PY3:
-    basestring = str
+    str = str
     long = int
     xrange = range
-    unicode = str
+    str = str
 
 REGEXP_CONVERTER = PyJsParser()
 
@@ -55,7 +55,7 @@ def indent(lines, ind=4):
 def compose_regex(val):
     reg, flags = val
     #reg = REGEXP_CONVERTER._unescape_string(reg)
-    return u'/%s/%s' % (reg, flags)
+    return '/%s/%s' % (reg, flags)
 
 def float_repr(f):
     if int(f)==f:

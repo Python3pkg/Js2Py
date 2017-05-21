@@ -24,7 +24,7 @@ def Function():
     # define py function and return it
     temp = executor(py_func, globals())
     temp.source = '{%s}'%body
-    temp.func_name = 'anonymous'
+    temp.__name__ = 'anonymous'
     return temp
 
 def executor(f, glob):

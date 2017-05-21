@@ -40,7 +40,7 @@ class ObjectMethods:
     def getOwnPropertyNames(obj):
         if not obj.is_object():
             raise MakeError('TypeError', 'Object.getOwnPropertyDescriptor called on non-object')
-        return obj.own.keys()
+        return list(obj.own.keys())
 
     def create(obj):
         if not (obj.is_object() or obj.is_null()):
@@ -74,7 +74,7 @@ class ObjectMethods:
     def seal(obj):
         if not obj.is_object():
             raise MakeError('TypeError', 'Object.seal called on non-object')
-        for desc in obj.own.values():
+        for desc in list(obj.own.values()):
             desc['configurable'] = False
         obj.extensible = False
         return obj
@@ -82,7 +82,7 @@ class ObjectMethods:
     def freeze(obj):
         if not obj.is_object():
             raise MakeError('TypeError', 'Object.freeze called on non-object')
-        for desc in obj.own.values():
+        for desc in list(obj.own.values()):
             desc['configurable'] = False
             if is_data_descriptor(desc):
                 desc['writable'] = False
@@ -100,7 +100,7 @@ class ObjectMethods:
             raise MakeError('TypeError', 'Object.isSealed called on non-object')
         if obj.extensible:
             return False
-        for desc in obj.own.values():
+        for desc in list(obj.own.values()):
             if desc['configurable']:
                 return False
         return True
@@ -110,7 +110,7 @@ class ObjectMethods:
             raise MakeError('TypeError', 'Object.isFrozen called on non-object')
         if obj.extensible:
             return False
-        for desc in obj.own.values():
+        for desc in list(obj.own.values()):
             if desc['configurable']:
                 return False
             if is_data_descriptor(desc) and desc['writable']:

@@ -1,7 +1,7 @@
-from jsparser import *
-from utils import *
+from .jsparser import *
+from .utils import *
 import re
-from utils import *
+from .utils import *
 
 #Note all white space sent to this module must be ' ' so no '\n'
 REPL = {}
@@ -52,7 +52,7 @@ class NodeVisitor:
         op must take 2 args
         a,b,c  => op(a, op(b, c))"""
         it = reversed(lis)
-        res = trans(it.next())
+        res = trans(next(it))
         for e in it:
             e = trans(e)
             res = op(e, res)
@@ -63,7 +63,7 @@ class NodeVisitor:
         op must take 2 args
         a,b,c  => op(op(a, b), c)"""
         it = iter(lis)
-        res = trans(it.next())
+        res = trans(next(it))
         for e in it:
             e = trans(e)
             res = op(res, e)
@@ -101,7 +101,7 @@ class NodeVisitor:
         cand = list(split_at_single(new, '=', ['!', '=','<','>'], ['=']))
         if len(cand)>1: # RL
             it = reversed(cand)
-            res =  trans(it.next())
+            res =  trans(next(it))
             for e in it:
                 e = e.strip()
                 if not e:
@@ -134,7 +134,7 @@ class NodeVisitor:
                 cand = list(split_add_ops(new))
             else:
                 #dont translate. cant start or end on dangerous op.
-               cand = list(split_at_any(new, typ.keys(), False, dangerous, dangerous,validitate=comb_validitator))
+               cand = list(split_at_any(new, list(typ.keys()), False, dangerous, dangerous,validitate=comb_validitator))
             if not len(cand)>1:
                 continue
             n = 1
@@ -152,7 +152,7 @@ class NodeVisitor:
                 n+=1
             return res
         #Now replace unary operators - only they are left
-        cand = list(split_at_any(new, UNARY.keys(), False, validitate=unary_validitator))
+        cand = list(split_at_any(new, list(UNARY.keys()), False, validitate=unary_validitator))
         if len(cand)>1: #contains unary operators
             if '++' in cand or '--' in cand: #it cant contain both ++ and --
                 if '--' in cand:
@@ -203,7 +203,7 @@ class NodeVisitor:
             else:
                 res += [e.strip()]
         # res[0] can be inside @@ (name)...
-        res = filter(lambda x: x, res)
+        res = [x for x in res if x]
         if is_internal(res[0]):
             out = res[0]
         elif res[0][0] in {'#', '@'}:
@@ -493,8 +493,8 @@ def exp_translator(code):
 if __name__=='__main__':
     #print 'Here',  trans('(eee   )  .   ii  [  PyJsMarker   ]  [   jkj  ]  (  j  ,   j  )  .
     #    jiji   (h  ,  ji  ,  i)(non  )(  )()()()')
-    for e in xrange(3):
-        print  exp_translator('jk = kk.ik++')
+    for e in range(3):
+        print(exp_translator('jk = kk.ik++'))
     #First line translated with PyJs:  PyJsStrictEq(PyJsAdd((Js(100)*Js(50)),Js(30)), Js("5030")), yay!
-    print exp_translator('delete a.f')
+    print(exp_translator('delete a.f'))
 

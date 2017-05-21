@@ -319,7 +319,7 @@ class DateProto:
         t = this.value
         year = YearFromTime(t)
         month, day, hour, minute, second, milli = pad(MonthFromTime(t)+1), pad(DateFromTime(t)), pad(HourFromTime(t)), pad(MinFromTime(t)), pad(SecFromTime(t)), pad(msFromTime(t))
-        return ISO_FORMAT % (unicode(year) if 0<=year<=9999 else pad(year, 6, True), month, day, hour, minute, second, milli)
+        return ISO_FORMAT % (str(year) if 0<=year<=9999 else pad(year, 6, True), month, day, hour, minute, second, milli)
 
     def toJSON(key):
         o = this.to_object()
@@ -334,7 +334,7 @@ class DateProto:
 
 def pad(num, n=2, sign=False):
     '''returns n digit string representation of the num'''
-    s = unicode(abs(num))
+    s = str(abs(num))
     if len(s)<n:
         s = '0'*(n-len(s)) + s
     if not sign:

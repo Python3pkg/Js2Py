@@ -1,9 +1,9 @@
 import six
 if six.PY3:
-    basestring = str
+    str = str
     long = int
     xrange = range
-    unicode = str
+    str = str
 
 
 RADIX_SYMBOLS = {0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
@@ -18,9 +18,9 @@ def to_str_rep(num):
     elif num.is_infinity():
         sign = '-' if num.value<0 else ''
         return num.Js(sign+'Infinity')
-    elif isinstance(num.value, (long, int)) or num.value.is_integer():  # dont print .0
-        return num.Js(unicode(int(num.value)))
-    return num.Js(unicode(num.value)) # accurate enough
+    elif isinstance(num.value, int) or num.value.is_integer():  # dont print .0
+        return num.Js(str(int(num.value)))
+    return num.Js(str(num.value)) # accurate enough
 
 
 class NumberPrototype:
@@ -32,7 +32,7 @@ class NumberPrototype:
         r = radix.to_int()
         if r==10:
             return to_str_rep(this)
-        if r not in xrange(2, 37): 
+        if r not in range(2, 37): 
             raise this.MakeError('RangeError', 'Number.prototype.toString() radix argument must be between 2 and 36')
         num = this.to_int()
         if num < 0:

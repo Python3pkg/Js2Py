@@ -62,7 +62,7 @@ def append_arguments(code_obj, new_locals):
 
     # Build the dictionary that maps indices of entries in the old co_varnames
     # to their indices in the new co_varnames
-    range1, range2 = xrange(co_argcount), xrange(co_argcount, len(co_varnames))
+    range1, range2 = range(co_argcount), range(co_argcount, len(co_varnames))
     varname_translations = dict((i, i) for i in range1)
     varname_translations.update((i, i + new_locals_len) for i in range2)
 
@@ -140,7 +140,7 @@ def instructions(code_obj):
         code = code_obj.co_code
         NewInstruction = namedtuple('Instruction', ('opcode', 'arg'))
         if six.PY2:
-            code = map(ord, code)
+            code = list(map(ord, code))
         i, L = 0, len(code)
         extended_arg = 0
         while i < L:
@@ -212,10 +212,10 @@ def check(code_obj):
             if old_bytecode[i] != new_bytecode[i]:
                 while 1:
                     if i in pos_to_inst:
-                        print(pos_to_inst[i])
-                        print(pos_to_inst[i-2])
-                        print(list(map(chr, old_bytecode))[i-4:i+8])
-                        print(bytelist[i-4:i+8])
+                        print((pos_to_inst[i]))
+                        print((pos_to_inst[i-2]))
+                        print((list(map(chr, old_bytecode))[i-4:i+8]))
+                        print((bytelist[i-4:i+8]))
                         break
             raise RuntimeError('Your python version made changes to the bytecode')
 
@@ -228,7 +228,7 @@ if __name__=='__main__':
     x = 'Wrong'
     dick = 3000
     def func(a):
-        print(x,y,z, a)
+        print((x,y,z, a))
         print(dick)
         d = (x,)
         for e in  (e for e in x):

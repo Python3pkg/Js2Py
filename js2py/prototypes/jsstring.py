@@ -2,7 +2,7 @@
 from .jsregexp import Exec
 import re
 DIGS = set('0123456789')
-WHITE = u"\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF"
+WHITE = "\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF"
 
 def replacement_template(rep, source, span, npar):
     """Takes the replacement template and some info about the match and returns filled template
@@ -159,7 +159,7 @@ class StringPrototype:
                     # prepare arguments for custom func (replaceValue)
                     args = (e.group(),) +  e.groups() + (e.span()[1], string)
                     # convert all types to JS
-                    args = map(this.Js, args)
+                    args = list(map(this.Js, args))
                     res += replaceValue(*args).to_string().value
                 else:
                     res += replacement_template(replaceValue, s, e.span(), e.groups())

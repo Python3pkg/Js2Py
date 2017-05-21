@@ -16,8 +16,8 @@ If case of parsing errors it must return a pos of error.
 NOTES:
 Strings and other literals are not present so each = means assignment
 """
-from utils import *
-from jsparser import *
+from .utils import *
+from .jsparser import *
 
 def exps_translator(js):
     #Check  () {} and [] nums
@@ -50,7 +50,7 @@ def bass_translator(s):
     if '=' not in s:
         return s
     ass = reversed(s.split('='))
-    last = ass.next()
+    last = next(ass)
     res = last
     for e in ass:
         op = ''
@@ -76,4 +76,4 @@ def bass_translator(s):
     return res
 
 if __name__=='__main__':
-    print bass_translator('3.ddsd = 40')
+    print(bass_translator('3.ddsd = 40'))

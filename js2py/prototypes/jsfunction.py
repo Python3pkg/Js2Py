@@ -1,10 +1,10 @@
 # python 3 support
 import six
 if six.PY3:
-    basestring = str
+    str = str
     long = int
     xrange = range
-    unicode = str
+    str = str
 
 
 # todo fix apply and bind
@@ -14,7 +14,7 @@ class FunctionPrototype:
         if not this.is_callable():
             raise TypeError('toString is not generic!')
         args = ', '.join(this.code.__code__.co_varnames[:this.argcount])
-        return 'function %s(%s) '%(this.func_name, args)+this.source
+        return 'function %s(%s) '%(this.__name__, args)+this.source
     
     def call():
         arguments_ = arguments
@@ -25,7 +25,7 @@ class FunctionPrototype:
         if len(arguments)<=1:
             args = () 
         else:
-            args = tuple([arguments_[e] for e in xrange(1, len(arguments_))])
+            args = tuple([arguments_[e] for e in range(1, len(arguments_))])
         return this.call(obj, args)
     
     def apply():
@@ -37,7 +37,7 @@ class FunctionPrototype:
             args = () 
         else:
             appl = arguments[1]
-            args = tuple([appl[e] for e in xrange(len(appl))])
+            args = tuple([appl[e] for e in range(len(appl))])
         return this.call(obj, args)
 
     def bind(thisArg):
@@ -47,7 +47,7 @@ class FunctionPrototype:
         if len(arguments) <= 1:
             args = ()
         else:
-            args = tuple([arguments[e] for e in xrange(1, len(arguments))])
+            args = tuple([arguments[e] for e in range(1, len(arguments))])
         return this.PyJsBoundFunction(target, thisArg, args)
 
 

@@ -7,7 +7,7 @@ def is_lval(t):
     if not t:
         return False
     i = iter(t)
-    if i.next() not in IDENTIFIER_START:
+    if next(i) not in IDENTIFIER_START:
         return False
     return all(e in IDENTIFIER_PART for e in i)
 
@@ -38,21 +38,21 @@ def is_reserved(t):
 
 
 #http://stackoverflow.com/questions/14245893/efficiently-list-all-characters-in-a-given-unicode-category
-BOM = u'\uFEFF'
-ZWJ = u'\u200D'
-ZWNJ = u'\u200C'
-TAB = u'\u0009'
-VT = u'\u000B'
-FF = u'\u000C'
-SP = u'\u0020'
-NBSP = u'\u00A0'
-LF = u'\u000A'
-CR = u'\u000D'
-LS = u'\u2028'
-PS = u'\u2029'
+BOM = '\uFEFF'
+ZWJ = '\u200D'
+ZWNJ = '\u200C'
+TAB = '\u0009'
+VT = '\u000B'
+FF = '\u000C'
+SP = '\u0020'
+NBSP = '\u00A0'
+LF = '\u000A'
+CR = '\u000D'
+LS = '\u2028'
+PS = '\u2029'
 
 U_CATEGORIES = defaultdict(list)  # Thank you Martijn Pieters!
-for c in map(unichr, range(sys.maxunicode + 1)):
+for c in map(chr, list(range(sys.maxunicode + 1))):
     U_CATEGORIES[unicodedata.category(c)].append(c)
 
 UNICODE_LETTER = set(U_CATEGORIES['Lu']+U_CATEGORIES['Ll']+

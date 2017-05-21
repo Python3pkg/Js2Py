@@ -46,7 +46,7 @@ TODO
 
 """
 
-from utils import *
+from .utils import *
 
 OP_METHODS = {'*': '__mul__',
               '/': '__div__',
@@ -74,13 +74,13 @@ def indent(lines, ind=4):
 def inject_before_lval(source, lval, code):
     if source.count(lval)>1:
         dbg(source)
-        print
-        print lval
+        print()
+        print(lval)
         raise RuntimeError('To many lvals (%s)' % lval)
     elif not source.count(lval):
         dbg(source)
-        print
-        print lval
+        print()
+        print(lval)
         assert lval not in source
         raise RuntimeError('No lval found "%s"' % lval)
     end = source.index(lval)
@@ -124,12 +124,12 @@ def pass_bracket(source, start, bracket='()'):
      Otherwise None"""
     e = bracket_split(source[start:],[bracket], False)
     try:
-        cand = e.next()
+        cand = next(e)
     except StopIteration:
         return None, None
     if not cand.strip(): #white space...
         try:
-            res = e.next()
+            res = next(e)
             return res, start + len(cand) + len(res)
         except StopIteration:
             return None, None

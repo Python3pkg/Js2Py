@@ -19,7 +19,7 @@ def compose_prototype(Class, attrs=default_attrs):
         e = getattr(Class, i)
         if hasattr(e, '__func__'):
             temp = PyJsFunction(e.__func__, FunctionPrototype)
-            attrs = {k:v for k,v in attrs.iteritems()}
+            attrs = {k:v for k,v in attrs.items()}
             attrs['value'] = temp
             prototype.define_own_property(i, attrs)
     return prototype

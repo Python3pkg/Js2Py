@@ -4,10 +4,10 @@ indent = ''
 # python 3 support
 import six
 if six.PY3:
-    basestring = str
+    str = str
     long = int
     xrange = range
-    unicode = str
+    str = str
 
 
 def parse(text):
@@ -138,7 +138,7 @@ def ja(value, stack, gap, property_list, replacer_function, space):
     indent += gap
     partial = []
     length = len(value)
-    for index in xrange(length):
+    for index in range(length):
         index = str(index)
         str_index = value.Js(Str(index, value, replacer_function, property_list, gap, stack, space))
         if str_index.is_undefined():
@@ -176,8 +176,8 @@ def to_js(this, d):
 def walk(holder, name, reviver):
     val = holder.get(name)
     if val.Class=='Array':
-        for i in xrange(len(val)):
-            i = unicode(i)
+        for i in range(len(val)):
+            i = str(i)
             new_element = walk(val, i, reviver)
             if new_element.is_undefined():
                 val.delete(i)

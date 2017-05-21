@@ -8,7 +8,7 @@ if six.PY3:
 
 def to_arr(this):
     """Returns Python array from Js array"""
-    return [this.get(str(e)) for e in xrange(len(this))]
+    return [this.get(str(e)) for e in range(len(this))]
 
 
 ARR_STACK = set({})

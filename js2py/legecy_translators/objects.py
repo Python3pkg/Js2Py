@@ -3,11 +3,11 @@ Also it has  s function translating removed object/array to python code.
 Use this module just after removing constants. Later move on to removing functions"""
 OBJECT_LVAL = 'PyJsLvalObject%d_'
 ARRAY_LVAL = 'PyJsLvalArray%d_'
-from utils import *
-from jsparser import *
-from nodevisitor import  exp_translator
-import functions
-from flow import KEYWORD_METHODS
+from .utils import *
+from .jsparser import *
+from .nodevisitor import  exp_translator
+from . import functions
+from .flow import KEYWORD_METHODS
 
 def FUNC_TRANSLATOR(*a):#  stupid import system in python
     raise RuntimeError('Remember to set func translator. Thank you.')
@@ -167,7 +167,7 @@ def translate_object(obj, lval, obj_count=1, arr_count=1):
             try:
                 key, value = spl
             except:  #len(spl)> 2
-                print 'Unusual case ' + repr(e)
+                print('Unusual case ' + repr(e))
                 key = spl[0]
                 value = ':'.join(spl[1:])
             key = key.strip()
@@ -182,15 +182,15 @@ def translate_object(obj, lval, obj_count=1, arr_count=1):
             res.append('%s:%s' % (key, value))
     res = '%s = Js({%s})\n' % (lval, ','.join(res)) + gsetters_after
     # translate all the nested objects (including removed earlier functions)
-    for nested_name, nested_info in inline.iteritems(): # functions
+    for nested_name, nested_info in inline.items(): # functions
         nested_block, nested_args = nested_info
         new_def = FUNC_TRANSLATOR(nested_name, nested_block, nested_args)
         res = new_def + res
-    for lval, obj in obj_rep.iteritems(): #objects
+    for lval, obj in obj_rep.items(): #objects
         new_def, obj_count, arr_count = translate_object(obj, lval, obj_count, arr_count)
         # add object definition BEFORE array definition
         res = new_def + res
-    for lval, obj in arr_rep.iteritems(): # arrays
+    for lval, obj in arr_rep.items(): # arrays
         new_def, obj_count, arr_count = translate_array(obj, lval, obj_count, arr_count)
         # add object definition BEFORE array definition
         res = new_def + res
@@ -206,7 +206,7 @@ def translate_setter(lval, setter):
             raise Exception()
     except:
         raise SyntaxError('Could not parse setter: '+setter)
-    prop = data.keys()[0]
+    prop = list(data.keys())[0]
     body, args = data[prop]
     if len(args)!=1:  #setter must have exactly 1 argument
         raise SyntaxError('Invalid setter. It must take exactly 1 argument.')
@@ -223,7 +223,7 @@ def translate_getter(lval, getter):
             raise Exception()
     except:
         raise SyntaxError('Could not parse getter: '+getter)
-    prop = data.keys()[0]
+    prop = list(data.keys())[0]
     body, args = data[prop]
     if len(args)!=0:  #setter must have exactly 0 argument
         raise SyntaxError('Invalid getter. It must take exactly 0 argument.')
@@ -256,15 +256,15 @@ def translate_array(array, lval, obj_count=1, arr_count=1):
     #But we can have more code to add to define arrays/objects/functions defined inside this array
     # translate nested objects:
     # functions:
-    for nested_name, nested_info in inline.iteritems():
+    for nested_name, nested_info in inline.items():
         nested_block, nested_args = nested_info
         new_def = FUNC_TRANSLATOR(nested_name, nested_block, nested_args)
         arr = new_def + arr
-    for lval, obj in obj_rep.iteritems():
+    for lval, obj in obj_rep.items():
         new_def, obj_count, arr_count = translate_object(obj, lval, obj_count, arr_count)
         # add object definition BEFORE array definition
         arr = new_def + arr
-    for lval, obj in arr_rep.iteritems():
+    for lval, obj in arr_rep.items():
         new_def, obj_count, arr_count = translate_array(obj, lval, obj_count, arr_count)
         # add object definition BEFORE array definition
         arr = new_def + arr
@@ -280,8 +280,8 @@ if __name__=='__main__':
 
     #print remove_objects(test)
     #print list(bracket_split(' {}'))
-    print
-    print remove_arrays('typeof a&&!db.test(a)&&!ib[(bb.exec(a)||["",""], [][[5][5]])[1].toLowerCase()])')
-    print  is_object('', ')')
+    print()
+    print(remove_arrays('typeof a&&!db.test(a)&&!ib[(bb.exec(a)||["",""], [][[5][5]])[1].toLowerCase()])'))
+    print(is_object('', ')'))
 
 

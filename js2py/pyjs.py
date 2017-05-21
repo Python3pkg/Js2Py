@@ -55,12 +55,12 @@ def set_global_object(obj):
 
 
 
-scope = dict(zip(builtins, [globals()[e] for e in builtins]))
+scope = dict(list(zip(builtins, [globals()[e] for e in builtins])))
 # Now add errors:
-for name, error in ERRORS.items():
+for name, error in list(ERRORS.items()):
     scope[name] = error
 #add eval
 scope['eval'] = Eval
 scope['JSON'] = JSON
-JS_BUILTINS = dict((k,v) for k,v in scope.items())
+JS_BUILTINS = dict((k,v) for k,v in list(scope.items()))
 

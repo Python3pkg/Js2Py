@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 from pyjsparser.pyjsparserdata import *
 from .friendly_nodes import *
 import random
@@ -7,7 +7,7 @@ import six
 if six.PY3:
     from functools import reduce
     xrange = range
-    unicode = str
+    str = str
 # number of characters above which expression will be split to multiple lines in order to avoid python parser stack overflow
 # still experimental so I suggest to set it to 400 in order to avoid common errors
 # set it to smaller value only if you have problems with parser stack overflow
@@ -99,7 +99,7 @@ def to_key(literal_or_identifier):
     elif literal_or_identifier['type']=='Literal':
         k = literal_or_identifier['value']
         if isinstance(k, float):
-            return unicode(float_repr(k))
+            return str(float_repr(k))
         elif 'regex' in literal_or_identifier:
             return compose_regex(k)
         elif isinstance(k, bool):
@@ -107,7 +107,7 @@ def to_key(literal_or_identifier):
         elif k is None:
             return 'null'
         else:
-            return unicode(k)
+            return str(k)
 
 def trans(ele, standard=False):
     """Translates esprima syntax tree to python by delegating to appropriate translating node"""
@@ -550,7 +550,7 @@ def FunctionDeclaration(type, id, params, defaults, body, generator, expression)
     header = '@Js\n'
     header+= 'def %s(%sthis, arguments, var=var):\n' % (PyName, ', '.join(used_vars) +(', ' if vars else ''))
     # transfer names from Py scope to Js scope
-    arg_map = dict(zip(vars, used_vars))
+    arg_map = dict(list(zip(vars, used_vars)))
     arg_map.update({'this':'this', 'arguments':'arguments'})
     arg_conv = 'var = Scope({%s}, var)\n' % ', '.join(repr(k)+':'+v for k,v in six.iteritems(arg_map))
     # and finally set the name of the function to its real name:
@@ -599,7 +599,7 @@ def FunctionExpression(type, id, params, defaults, body, generator, expression):
     header = '@Js\n'
     header+= 'def %s(%sthis, arguments, var=var):\n' % (PyName, ', '.join(used_vars) +(', ' if vars else ''))
     # transfer names from Py scope to Js scope
-    arg_map = dict(zip(vars, used_vars))
+    arg_map = dict(list(zip(vars, used_vars)))
     arg_map.update({'this':'this', 'arguments':'arguments'})
     if id: # make self available from inside...
         if id['name'] not in arg_map:
@@ -634,8 +634,8 @@ if __name__=='__main__':
     t = time.time()
     res = trans(pyjsparser.PyJsParser().parse(c))
     dt = time.time() - t+ 0.000000001
-    print('Translated everyting in', round(dt,5), 'seconds.')
-    print('Thats %d characters per second' % int(len(c)/dt))
+    print(('Translated everyting in', round(dt,5), 'seconds.'))
+    print(('Thats %d characters per second' % int(len(c)/dt)))
     with open('res.py', 'w') as f:
         f.write(res)
 

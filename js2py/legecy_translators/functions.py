@@ -1,6 +1,6 @@
 """This module removes JS functions from source code"""
-from jsparser import *
-from utils import *
+from .jsparser import *
+from .utils import *
 
 
 INLINE_NAME = 'PyJsLvalInline%d_'
@@ -81,4 +81,4 @@ def remove_functions(source, all_inline=False):
 
 
 if __name__=='__main__':
-    print remove_functions('5+5 function n  (functiona ,functionaj) {dsd  s, dsdd}')
+    print(remove_functions('5+5 function n  (functiona ,functionaj) {dsd  s, dsdd}'))

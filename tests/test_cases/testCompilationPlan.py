@@ -30,7 +30,7 @@ print(('duration with compilation plan %i'%(now() - start).seconds))
 from js2py.translators.translator import get_compilation_plan
 expression = "Age==1 && Gender==2 && JobTitle=='Decision maker'"
 strings, numbers, plan = get_compilation_plan(expression)
-print('strings:\n%s'%strings)
-print('numbers:\n%s'%numbers)
-print('plan:\n%s'%plan)
-print(js2py.translate_js(expression))
+print(('strings:\n%s'%strings))
+print(('numbers:\n%s'%numbers))
+print(('plan:\n%s'%plan))
+print((js2py.translate_js(expression)))

@@ -16,10 +16,10 @@ except:
 # python 3 support
 import six
 if six.PY3:
-    basestring = str
+    str = str
     long = int
     xrange = range
-    unicode = str
+    str = str
 
 
 def str_repr(s):
@@ -118,7 +118,7 @@ def HJs(val):
             return py_wrap(py_res)
 
         try:
-            PyWrapper.func_name = val.__name__
+            PyWrapper.__name__ = val.__name__
         except:
             pass
         return PyWrapper
@@ -133,11 +133,11 @@ def Js(val, Clamped=False):
         return val
     elif val is None:
         return undefined
-    elif isinstance(val, basestring):
+    elif isinstance(val, str):
         return PyJsString(val, StringPrototype)
     elif isinstance(val, bool):
         return true if val else false
-    elif isinstance(val, float) or isinstance(val, int) or isinstance(val, long) or (NUMPY_AVAILABLE and isinstance(val, (numpy.int8,numpy.uint8,
+    elif isinstance(val, float) or isinstance(val, int) or isinstance(val, int) or (NUMPY_AVAILABLE and isinstance(val, (numpy.int8,numpy.uint8,
                                                                                                                           numpy.int16,numpy.uint16,
                                                                                                                           numpy.int32,numpy.uint32,
                                                                                                                           numpy.float32,numpy.float64))):
@@ -296,9 +296,9 @@ class PyJs(object):
          #prop = prop.value
          if self.Class=='Undefined' or self.Class=='Null':
              raise MakeError('TypeError', 'Undefined and null dont have properties!')
-         if not isinstance(prop, basestring):
+         if not isinstance(prop, str):
              prop = prop.to_string().value
-         if not isinstance(prop, basestring): raise RuntimeError('Bug')
+         if not isinstance(prop, str): raise RuntimeError('Bug')
          if NUMPY_AVAILABLE and prop.isdigit():
              if isinstance(self.buff,numpy.ndarray):
                  self.update_array()
@@ -337,7 +337,7 @@ class PyJs(object):
            * / % + - << >> & ^ |'''
         if self.Class=='Undefined' or self.Class=='Null':
              raise MakeError('TypeError', 'Undefined and null dont have properties!')
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
              prop = prop.to_string().value
         if NUMPY_AVAILABLE and prop.isdigit():
             if self.Class == 'Int8Array':
@@ -395,7 +395,7 @@ class PyJs(object):
         return self.get_property(prop) is not None
     
     def delete(self, prop):
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         desc = self.get_own_property(prop)
         if desc is None: 
@@ -560,9 +560,9 @@ class PyJs(object):
             elif self.is_infinity():
                 sign = '-' if self.value<0 else ''
                 return Js(sign+'Infinity')
-            elif isinstance(self.value, long) or self.value.is_integer():  # dont print .0
-                return Js(unicode(int(self.value)))
-            return Js(unicode(self.value)) # accurate enough
+            elif isinstance(self.value, int) or self.value.is_integer():  # dont print .0
+                return Js(str(int(self.value)))
+            return Js(str(self.value)) # accurate enough
         elif typ=='String':
             return self
         else: #object
@@ -664,7 +664,7 @@ class PyJs(object):
     def neg(self): # !u  cant do 'not u' :(
         return Js(not self.to_boolean().value)
     
-    def __nonzero__(self): 
+    def __bool__(self): 
         return self.to_boolean().value
 
     def __bool__(self):
@@ -931,7 +931,7 @@ class PyJs(object):
         
         NOTE: dont pass this and arguments here, these will be added
         automatically!'''
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         cand = self.get(prop)
         if not cand.is_callable():
@@ -985,7 +985,7 @@ class PyJsException(Exception):
         if self.mes.Class=='Error':
             return self.mes.callprop('toString').value
         else:
-            return unicode(self.mes)
+            return str(self.mes)
 
 class PyJsSwitchException(Exception): pass
 
@@ -1066,7 +1066,7 @@ class Scope(PyJs):
 
     def get(self, prop, throw=True):
         #note prop is always a Py String
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         if self.prototype is not None:
             # fast local scope
@@ -1101,7 +1101,7 @@ class Scope(PyJs):
         self.put(name, py_wrap(module))
 
     def __repr__(self):
-        return u'[Object Global]'
+        return '[Object Global]'
 
     def to_python(self):
         return to_python(self)
@@ -1165,7 +1165,7 @@ class JsObjectWrapper(object):
     def __len__(self):
         return len(self._obj)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self._obj)
 
     def __bool__(self):
@@ -1183,7 +1183,7 @@ class PyObjectWrapper(PyJs):
         self.obj = obj
 
     def get(self, prop):
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         try:
             if prop.isdigit():
@@ -1193,7 +1193,7 @@ class PyObjectWrapper(PyJs):
             return undefined
 
     def put(self, prop, val, throw=False):
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         try:
             setattr(self.obj, prop, to_python(val))
@@ -1217,12 +1217,12 @@ class PyObjectWrapper(PyJs):
 
     def callprop(self, prop, *args):
         py_args = tuple(to_python(e) for e in args)
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         return self.get(prop)(*py_args)
 
     def delete(self, prop):
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
             prop = prop.to_string().value
         try:
             if prop.isdigit():
@@ -1245,7 +1245,7 @@ class PyObjectWrapper(PyJs):
 
 def py_wrap(py):
     if isinstance(py, (FunctionType, BuiltinFunctionType, MethodType, BuiltinMethodType,
-                       dict, int, str, bool, float, list, tuple, long, basestring)) or py is None :
+                       dict, int, str, bool, float, list, tuple)) or py is None :
         return HJs(py)
     return PyObjectWrapper(py)
 
@@ -1283,7 +1283,7 @@ class PyJsFunction(PyJs):
         self.argcount = six.get_function_code(func).co_argcount - 2 - has_scope
         self.code = func
         self.source = source if source else '{ [python code] }'
-        self.func_name = func.__name__ if not func.__name__.startswith('PyJs_anonymous') else ''
+        self.__name__ = func.__name__ if not func.__name__.startswith('PyJs_anonymous') else ''
         self.extensible = extensible
         self.prototype = prototype
         self.own = {}
@@ -1291,8 +1291,8 @@ class PyJsFunction(PyJs):
         self.define_own_property('length', {'value': Js(self.argcount), 'writable': False,
                                             'enumerable': False, 'configurable': False})
 
-        if self.func_name:
-            self.define_own_property('name', {'value': Js(self.func_name), 'writable': False,
+        if self.__name__:
+            self.define_own_property('name', {'value': Js(self.__name__), 'writable': False,
                                             'enumerable': False, 'configurable': True})
 
         # set own prototype
@@ -1306,7 +1306,7 @@ class PyJsFunction(PyJs):
     def _set_name(self, name):
         '''name is py type'''
         if self.own.get('name'):
-            self.func_name = name
+            self.__name__ = name
             self.own['name']['value'] = Js(name)
 
     def construct(self, *args):
@@ -1380,7 +1380,7 @@ class PyJsBoundFunction(PyJsFunction):
         self.argcount = target.argcount
         self.code = target.code
         self.source = target.source
-        self.func_name = target.func_name
+        self.__name__ = target.__name__
         self.extensible = True
         self.prototype = FunctionPrototype
         self.own = {}
@@ -1388,8 +1388,8 @@ class PyJsBoundFunction(PyJsFunction):
         self.define_own_property('length', {'value': target.get('length')-Js(len(self.bound_args)), 'writable': False,
                                             'enumerable': False, 'configurable': False})
 
-        if self.func_name:
-            self.define_own_property('name', {'value': Js(self.func_name), 'writable': False,
+        if self.__name__:
+            self.define_own_property('name', {'value': Js(self.__name__), 'writable': False,
                                               'enumerable': False, 'configurable': True})
 
         # set own prototype
@@ -1453,7 +1453,7 @@ class PyJsString(PyJs):
     extensible = False
     def __init__(self, value=None, prototype=None):
         '''Constructor for Number String and Boolean'''
-        if not isinstance(value, basestring):
+        if not isinstance(value, str):
             raise TypeError # this will be internal error
         self.value = value
         self.prototype = prototype
@@ -1467,7 +1467,7 @@ class PyJsString(PyJs):
                                # 'enumerable': True, 'configurable': False}
 
     def get(self, prop):
-        if not isinstance(prop, basestring):
+        if not isinstance(prop, str):
                 prop = prop.to_string().value
         try:
             index = int(prop)
@@ -1485,7 +1485,7 @@ class PyJsString(PyJs):
         return False
 
     def __iter__(self):
-        for i in xrange(len(self.value)):
+        for i in range(len(self.value)):
             yield Js(i)  # maybe create an int bank?
 
 
@@ -1561,7 +1561,7 @@ class PyJsArray(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -1595,7 +1595,7 @@ class PyJsArray(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -1635,7 +1635,7 @@ class PyJsArrayBuffer(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -1669,7 +1669,7 @@ class PyJsArrayBuffer(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -1710,7 +1710,7 @@ class PyJsInt8Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -1744,7 +1744,7 @@ class PyJsInt8Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -1785,7 +1785,7 @@ class PyJsUint8Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -1819,7 +1819,7 @@ class PyJsUint8Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -1860,7 +1860,7 @@ class PyJsUint8ClampedArray(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -1894,7 +1894,7 @@ class PyJsUint8ClampedArray(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -1935,7 +1935,7 @@ class PyJsInt16Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -1969,7 +1969,7 @@ class PyJsInt16Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -2010,7 +2010,7 @@ class PyJsUint16Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -2044,7 +2044,7 @@ class PyJsUint16Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -2085,7 +2085,7 @@ class PyJsInt32Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -2119,7 +2119,7 @@ class PyJsInt32Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -2160,7 +2160,7 @@ class PyJsUint32Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -2194,7 +2194,7 @@ class PyJsUint32Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -2235,7 +2235,7 @@ class PyJsFloat32Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -2269,7 +2269,7 @@ class PyJsFloat32Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -2310,7 +2310,7 @@ class PyJsFloat64Array(PyJs):
             if new_len<old_len:
                 # not very efficient for sparse arrays, so using different method for sparse:
                 if old_len>30*len(self.own):
-                    for ele in self.own.keys():
+                    for ele in list(self.own.keys()):
                         if ele.isdigit() and int(ele)>=new_len:
                             if not self.delete(ele): # if failed to delete set len to current len and reject.
                                 new_desc['value'] = Js(old_len+1)
@@ -2344,7 +2344,7 @@ class PyJsFloat64Array(PyJs):
             return PyJs.define_own_property(self, prop, desc)
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
     def __repr__(self):
         return repr(self.to_python().to_list())
@@ -2385,7 +2385,7 @@ class PyJsArguments(PyJs):
             self.put(str(i), Js(e))
 
     def to_list(self):
-        return [self.get(str(e)) for e in xrange(self.get('length').to_uint32())]
+        return [self.get(str(e)) for e in range(self.get('length').to_uint32())]
 
 
 #We can define function proto after number proto because func uses number in its init
@@ -2436,9 +2436,9 @@ class PyJsRegExp(PyJs):
                 # todo critical fix patter conversion etc. ..!!!!!
                 # ugly hacks porting js reg exp to py reg exp works in 99% of cases ;)
                 possible_fixes = [
-                    (u'[]', u'[\0]'),
-                    (u'[^]', u'[^\0]'),
-                    (u'nofix1791', u'nofix1791')
+                    ('[]', '[\0]'),
+                    ('[^]', '[^\0]'),
+                    ('nofix1791', 'nofix1791')
                 ]
                 reg = self.value
                 for fix, rep in possible_fixes:
@@ -2505,7 +2505,7 @@ default_attrs = {'writable':True, 'enumerable':False, 'configurable':True}
 
 
 def fill_in_props(obj, props, default_desc):
-    for prop, value in props.items():
+    for prop, value in list(props.items()):
         default_desc['value'] = Js(value)
         obj.define_own_property(prop, default_desc)
 
@@ -2565,13 +2565,13 @@ def fill_prototype(prototype, Class, attrs, constructor=False):
         if six.PY2:
             if hasattr(e, '__func__'):
                 temp = PyJsFunction(e.__func__, FunctionPrototype)
-                attrs = dict((k,v) for k,v in attrs.iteritems())
+                attrs = dict((k,v) for k,v in attrs.items())
                 attrs['value'] = temp
                 prototype.define_own_property(i, attrs)
         else:
             if hasattr(e, '__call__') and not i.startswith('__'):
                 temp = PyJsFunction(e, FunctionPrototype)
-                attrs = dict((k,v) for k,v in attrs.items())
+                attrs = dict((k,v) for k,v in list(attrs.items()))
                 attrs['value'] = temp
                 prototype.define_own_property(i, attrs)
         if constructor:
@@ -2750,24 +2750,24 @@ def appengine(code):
 builtins = ('true','false','null','undefined','Infinity',
             'NaN')
 
-scope = dict(zip(builtins, [eval(e) for e in builtins]))
+scope = dict(list(zip(builtins, [eval(e) for e in builtins])))
 
-JS_BUILTINS = dict((k,v) for k,v in scope.items())
+JS_BUILTINS = dict((k,v) for k,v in list(scope.items()))
 
 
 # Fill in NUM_BANK
-for e in xrange(-2**10,2**14):
+for e in range(-2**10,2**14):
     NUM_BANK[e] = Js(e)
 
 if __name__=='__main__':
-    print(ObjectPrototype.get('toString').callprop('call'))
-    print(FunctionPrototype.own)
+    print((ObjectPrototype.get('toString').callprop('call')))
+    print((FunctionPrototype.own))
     a=  null-Js(49404)
     x = a.put('ser', Js('der'))
-    print(Js(0) or Js('p') and Js(4.0000000000050000001))
+    print((Js(0) or Js('p') and Js(4.0000000000050000001)))
     FunctionPrototype.put('Chuj', Js(409))
     for e in FunctionPrototype:
-        print('Obk', e.get('__proto__').get('__proto__').get('__proto__'), e)
+        print(('Obk', e.get('__proto__').get('__proto__').get('__proto__'), e))
     import code
     s = Js(4)
     b = Js(6)

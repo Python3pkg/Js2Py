@@ -6,7 +6,7 @@ if six.PY3:
 
 def to_arr(this):
     """Returns Python array from Js array"""
-    return [this.get(str(e)) for e in xrange(len(this))]
+    return [this.get(str(e)) for e in range(len(this))]
 
 
 ARR_STACK = set({})
@@ -28,7 +28,7 @@ class ArrayPrototype:
         if not arr_len:
             return ''
         res = []
-        for i in xrange(arr_len):
+        for i in range(arr_len):
             element = array[str(i)]
             if element.is_undefined() or element.is_null():
                 res.append('')
@@ -66,7 +66,7 @@ class ArrayPrototype:
         arr_len = array.get('length').to_uint32()
         separator = ',' if separator.is_undefined() else separator.to_string().value
         elems = []
-        for e in xrange(arr_len):
+        for e in range(arr_len):
             elem = array.get(str(e))
             if elem in ARR_STACK:
                 s = ''
@@ -106,7 +106,7 @@ class ArrayPrototype:
     def reverse():
         array = this.to_object() # my own algorithm
         vals = to_arr(array)
-        has_props = [array.has_property(str(e)) for e in xrange(len(array))]
+        has_props = [array.has_property(str(e)) for e in range(len(array))]
         vals.reverse()
         has_props.reverse()
         for i, val in enumerate(vals):
@@ -124,7 +124,7 @@ class ArrayPrototype:
             array.put('length', this.Js(0))
             return None
         first = array.get('0')
-        for k in xrange(1, arr_len):
+        for k in range(1, arr_len):
             from_s, to_s = str(k), str(k-1)
             if array.has_property(from_s):
                 array.put(to_s, array.get(from_s))
@@ -155,7 +155,7 @@ class ArrayPrototype:
         if not this.Class in ('Array', 'Arguments'):
             return this.to_object() # do nothing
         arr = []
-        for i in xrange(len(this)):
+        for i in range(len(this)):
             arr.append(this.get(six.text_type(i)))
 
         if not arr:
@@ -168,7 +168,7 @@ class ArrayPrototype:
             arr.sort(key=key)
         else:
             arr.sort(cmp=cmp)
-        for i in xrange(len(arr)):
+        for i in range(len(arr)):
             this.put(six.text_type(i), arr[i])
 
         return this
